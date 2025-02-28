@@ -1,25 +1,88 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
     <title>Exam Result Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;family=Roboto:wght@400;700&amp;family=Sacramento&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;family=Roboto:wght@400;700&amp;family=Sacramento&amp;display=swap" rel="stylesheet"></link>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 20px; }
-        .container { max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        h2 { text-align: center; color: #333; }
-        .search-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .search-box input { padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; }
-        .search-box button { padding: 10px; font-size: 16px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-        .search-box button:hover { background-color: #0056b3; }
-        .result { display: none; margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; }
-        .result p { margin: 5px 0; font-size: 16px; }
-        .result-buttons { margin-top: 10px; display: flex; gap: 10px; }
-        .result-buttons button { padding: 10px; font-size: 14px; background-color: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-        .result-buttons button:hover { background-color: #218838; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-box button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .result p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .result-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .result-buttons button {
+            padding: 10px;
+            font-size: 14px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result-buttons button:hover {
+            background-color: #218838;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -43,46 +106,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        const SHEET_URLS = {
-            1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfY2XfIHevrUjQndM9NhdDcH1nlwRe_-y-6rh9626uBGDB8Bw9Yu7WIDUJRh4i8nJdHL60IWsTJWbE/pub?output=csv",
-            2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpSXTffgqsHjc7rYfBf8Yt4jF9bSXAZqm_L3TzuGpEkMlF2F8Czvm6iClsBhb3kEQWsCtclRzfw3lX/pub?output=csv",
-        };
-
-        async function fetchData(examNumber) {
-            const SHEET_URL = SHEET_URLS[examNumber];
-            if (!SHEET_URL) { alert("No data available."); return []; }
-            try {
-                const response = await axios.get(SHEET_URL);
-                const rows = response.data.split("\n").map(row => row.split(","));
-                return rows.slice(1).map(row => ({
-                    score: row[1]?.trim(), mobile: row[2]?.trim(), name: row[3]?.trim(),
-                    fatherName: row[4]?.trim(), motherName: row[5]?.trim(), exam: examNumber
-                }));
-            } catch (error) { alert("Fetch failed!"); console.error(error); return []; }
-        }
-
-        async function searchResult() {
-            const mobileNumber = document.getElementById("mobileNumber").value.trim();
-            const examNumber = document.getElementById("examNumber").value.trim();
-            if (!mobileNumber || !examNumber) return alert("Please enter both numbers.");
-
-            const data = await fetchData(examNumber);
-            const match = data.find(row => row.mobile === mobileNumber);
-
-            if (match) {
-                document.getElementById("name").innerText = match.name;
-                document.getElementById("fatherName").innerText = match.fatherName;
-                document.getElementById("motherName").innerText = match.motherName;
-                document.getElementById("score").innerText = match.score;
-                document.getElementById("exam").innerText = match.exam;
-                document.getElementById("result").style.display = "block";
-            } else {
-                alert("No match found.");
-                document.getElementById("result").style.display = "none";
-            }
-        }
-    </script>
+    <div class="footer">Powered ⚡ by Khubayb Hossain</div>
 </body>
 </html>
