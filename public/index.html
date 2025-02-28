@@ -86,6 +86,25 @@
                 document.getElementById("result").style.display = "none";
             }
         }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const name = document.getElementById("name").innerText;
+            const fatherName = document.getElementById("fatherName").innerText;
+            const motherName = document.getElementById("motherName").innerText;
+            const score = document.getElementById("score").innerText;
+            const exam = document.getElementById("exam").innerText;
+
+            doc.text(`Name: ${name}`, 10, 10);
+            doc.text(`Father's Name: ${fatherName}`, 10, 20);
+            doc.text(`Mother's Name: ${motherName}`, 10, 30);
+            doc.text(`Score: ${score}`, 10, 40);
+            doc.text(`Exam No: ${exam}`, 10, 50);
+
+            doc.save('exam-result.pdf');
+        }
     </script>
 </body>
 </html>
