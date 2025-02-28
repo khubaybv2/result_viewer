@@ -25,7 +25,7 @@ Setup & Deployment
 sh
 Copy
 Edit
-git clone https://github.com/YOUR_USERNAME/exam-result-viewer.git
+git clone https://github.com/khubaybv2/result_viewer
 cd exam-result-viewer
 2. Install Dependencies
 sh
